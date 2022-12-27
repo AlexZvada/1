@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <script>
+        function deepClone(obj) {
+            if (typeof obj === 'object' && obj !== null) {
+                const clone = {};
+                const descriptors = Object.getOwnPropertyDescriptors(obj);
+                    for (const key in descriptors) {
+                        Object.defineProperty(clone, key, {
+                            value: descriptors[key].value,
+                            writable: descriptors[key].writable,
+                            configurable: descriptors[key].configurable,
+                            enumerable: descriptors[key].enumerable
+                        })
+                    }
+                return clone;
+            }
+
+        if (typeof obj === 'funnction') {
+            return Object.assign(obj);;
+        }
+        if (typeof obj === 'array') {
+            return [...obj];
+        }
+        const clone = obj;
+        return clone;
+        }
+
+        function sum(a, b) {
+            return a + b;
+        }
+        let array =[1,2,3,4,5]; 
+        const obj = Object.create({}, {
+            a: {
+                value: 'hi'
+            },
+            b: {
+                value: 1,
+                enumerable: true
+            },
+            c: {
+                value: 2
+            }
+        });
+        const cloneSum = deepClone(sum);
+        sum = null;
+        console.log(cloneSum(2, 5));
+        const clone = deepClone(obj);
+        obj.d=4;
+        console.log(obj);
+        console.log(clone);
+
+        const toDoList = {
+                list: [],
+                create(name, info) {
+                    const statusByDefault = 'to do';
+                    let array = this.list;
+                    if (!array[0]) {
+                        const newObject = {
+                            task: name,
+                            status: statusByDefault,
+                            info: info
+                        }
+                        array.push(newObject)
+                    }
+                    array.forEach(function (el, index) {
+                        let iteralObject = el;
+                        if (iteralObject.task !== name) {
+                            index++;
+                        }
+                        if (index === array.length) {
+                            const newObject = {
+                                task: name,
+                                status: statusByDefault,
+                                info: info
+                            }
+                            array.push(newObject)
+                        }
+                    })
+                    return array;
+                },
+                remove(task) {
+                    let array = this.list;
+                    array.forEach(function (el, index) {
+                        let object = el;
+                        if (object.task === task) {
+                            array.splice(index, 1)
+                        }
+                    })
+                    return array;
+                },
+                info() {
+                    let array = this.list;
+                    const taskCounter = {
+                        all: array.length,
+                        toDo: 0,
+                        done: 0
+                    };
+                    array.forEach(function (el) {
+                        let iteralObject = el;
+                        if (iteralObject.status === 'to do') {
+                            taskCounter.toDo += 1;
+                        }
+                        else {
+                            taskCounter.done += 1;
+                        }
+                    })
+                    console.log(taskCounter);
+                },
+                changeStatus(task) {
+                    let array = this.list;
+                    const newStatus = "done";
+                    const defaultStatus = 'to do';
+                    array.find(function (el) {
+                        let iteralObject = el;
+                        if (iteralObject.task === task) {
+                            if (iteralObject.status === defaultStatus) {
+                                iteralObject.status = newStatus;
+                            }
+                            else (iteralObject.status = defaultStatus)
+                        }
+                    })
+                },
+                changeInfo(task, newInfo) {
+                    let array = this.list;
+                    array.find(function (el) {
+                        let iteralObject = el;
+                        if (iteralObject.task === task) {
+                            iteralObject.info = newInfo
+                        }
+                    })
+                }
+            }
+
+            Object.defineProperties(toDoList, {
+                    'create': {
+                        enumerable: false,
+                        writable: false,
+                        configurable: false
+                    },
+                    'remove': {
+                        enumerable: false,
+                        writable: false,
+                        configurable: false
+                    },
+                    'info': {
+                        enumerable: false,
+                        writable: false,
+                        configurable: false
+                    },
+                    'changeStatus': {
+                        enumerable: false,
+                        writable: false,
+                        configurable: false
+                    },
+                    'changeInfo': {
+                        enumerable: false,
+                        writable: false,
+                        configurable: false
+                    }
+                });
+
+        const cloneToDoList = deepClone(toDoList);
+        cloneToDoList.create('1', '2')
+        toDoList.create('2', '3')
+        delete toDoList.list;
+        console.log(cloneToDoList);
+        console.log(toDoList);
+    </script>
+</body>
+
+</html>
